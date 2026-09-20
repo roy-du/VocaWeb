@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>極客單字庫 - Cyberpunk Flashcards & Starred Words</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --primary-glow: #00f2fe;
+            --secondary-glow: #4facfe;
+            --accent-pink: #ff0844;
+            --accent-green: #00e676;
+            --accent-star: #ffd700;
+            --glass-bg: rgba(22, 27, 34, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --text-main: #f0f6fc;
+            --text-sub: #8b949e;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 炫彩動態背景光芒 */
+        .aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 15% 20%, rgba(0, 242, 254, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(255, 8, 68, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.08) 0%, transparent 60%);
+            filter: blur(45px);
+            animation: pulseBg 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(0, 242, 254, 0.35);
+            letter-spacing: 2px;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        /* 導覽列 */
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn {
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-sub);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+        }
+
+        /* 容器通用樣式 */
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 26px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .container.active {
+            display: flex;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 單元選擇畫面 */
+        .unit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .unit-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .unit-card:hover {
+            background: rgba(0, 242, 254, 0.1);
+            border-color: var(--primary-glow);
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+        }
+
+        .unit-card.starred-unit {
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.12), rgba(255, 140, 0, 0.05));
+            border-color: rgba(255, 215, 0, 0.4);
+            grid-column: span 2;
+        }
+
+        .unit-card.starred-unit:hover {
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.25), rgba(255, 140, 0, 0.12));
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .unit-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-glow);
+            margin-bottom: 6px;
+        }
+
+        .starred-unit .unit-title {
+            color: var(--accent-star);
+            font-size: 22px;
+        }
+
+        .unit-count {
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        /* 3D 翻牌卡片 */
+        .card-wrapper {
+            width: 100%;
+            height: 270px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .card-front {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+            color: var(--text-main);
+        }
+
+        .card-back {
+            background: linear-gradient(145deg, rgba(0, 242, 254, 0.1), rgba(79, 172, 254, 0.02));
+            border-color: rgba(0, 242, 254, 0.3);
+            color: #ffffff;
+            transform: rotateY(180deg);
+        }
+
+        .word-title {
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .word-pos {
+            font-size: 16px;
+            color: var(--primary-glow);
+            font-style: italic;
+            font-family: monospace;
+        }
+
+        .word-trans {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
+        }
+
+        /* 語音按鈕與星號按鈕 */
+        .card-icon-btn {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .card-icon-btn:hover {
+            transform: scale(1.12);
+        }
+
+        .tts-btn {
+            top: 15px;
+            right: 15px;
+        }
+
+        .tts-btn:hover {
+            background: var(--primary-glow);
+            color: #000;
+        }
+
+        .star-btn {
+            top: 15px;
+            left: 15px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .star-btn.starred {
+            color: var(--accent-star);
+            background: rgba(255, 215, 0, 0.2);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .star-btn.starred:hover {
+            background: rgba(255, 215, 0, 0.35);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-glow);
+        }
+
+        .progress-text {
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        /* 測驗模式 */
+        .quiz-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .quiz-word-box {
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .combo-badge {
+            font-size: 14px;
+            background: linear-gradient(135deg, #ff0844, #ffb199);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 800;
+            display: none;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 16px;
+            font-size: 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-glow);
+        }
+
+        .option-btn.correct {
+            background: rgba(0, 230, 118, 0.2) !important;
+            border-color: var(--accent-green) !important;
+            color: #00e676 !important;
+        }
+
+        .option-btn.wrong {
+            background: rgba(255, 8, 68, 0.2) !important;
+            border-color: var(--accent-pink) !important;
+            color: #ff0844 !important;
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        /* 結果畫面 */
+        .result-box {
+            width: 100%;
+            text-align: center;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .result-score {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00f2fe, #00e676);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 10px 0;
+        }
+
+        .mistake-list-container {
+            width: 100%;
+            max-height: 180px;
+            overflow-y: auto;
+            margin: 15px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .mistake-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+        }
+
+        .mistake-word {
+            color: var(--accent-pink);
+            font-weight: 600;
+        }
+
+        .list-star-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            transition: all 0.2s;
+        }
+
+        .list-star-btn.starred {
+            color: var(--accent-star);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="aurora-bg"></div>
+    <canvas id="bg-canvas"></canvas>
+
+    <h1>VOCABULARY MASTER</h1>
+
+    <!-- 頂部選單切換按鈕 -->
+    <div class="nav-buttons" id="main-nav" style="display:none;">
+        <button class="nav-btn" onclick="showUnitSelection()">📂 切換單元</button>
+        <button id="btn-flashcard" class="nav-btn active" onclick="switchMode('flashcard')">🎴 翻牌</button>
+        <button id="btn-quiz" class="nav-btn" onclick="switchMode('quiz')">📝 測驗</button>
+    </div>
+
+    <!-- 1. 單元選擇頁面 -->
+    <div id="unit-container" class="container active">
+        <h2 style="margin-top:0; color:var(--text-main); font-size: 1.3rem;">請選擇學習單元</h2>
+        <div class="unit-grid" id="unit-grid-box">
+            <!-- 單元卡片由 JS 動態生成 -->
+        </div>
+    </div>
+
+    <!-- 2. 翻牌模式 -->
+    <div id="flashcard-container" class="container">
+        <div class="card-wrapper" onclick="flipCard()">
+            <div class="card" id="card">
+                <!-- 正面 -->
+                <div class="card-face card-front">
+                    <button id="card-star-front" class="card-icon-btn star-btn" onclick="toggleCurrentWordStar(event)" title="標記星號">★</button>
+                    <button class="card-icon-btn tts-btn" onclick="speakCurrentWord(event)" title="發音">🔊</button>
+                    <div class="word-title" id="card-word">assess</div>
+                    <div class="word-pos" id="card-pos">(v)</div>
+                </div>
+                <!-- 背面 -->
+                <div class="card-face card-back">
+                    <button id="card-star-back" class="card-icon-btn star-btn" onclick="toggleCurrentWordStar(event)" title="標記星號">★</button>
+                    <div class="word-trans" id="card-trans">評估</div>
+                </div>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="action-btn" onclick="prevCard()">← 上一個</button>
+            <button class="action-btn" onclick="shuffleCards()">🎲 隨機洗牌</button>
+            <button class="action-btn" onclick="nextCard()">下一個 →</button>
+        </div>
+        <div class="progress-text" id="card-progress">1 / 61</div>
+    </div>
+
+    <!-- 3. 測驗模式 -->
+    <div id="quiz-container" class="container">
+        <div id="quiz-active-box" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <div class="quiz-header">
+                <span class="progress-text" id="quiz-progress">題目 1 / 10</span>
+                <span class="combo-badge" id="combo-badge">🔥 2 COMBO</span>
+            </div>
+            
+            <div class="quiz-word-box">
+                <span id="quiz-word">assess</span>
+                <button class="card-icon-btn tts-btn" style="position:static;" onclick="speakWord(currentQuizWord.word)">🔊</button>
+            </div>
+
+            <div class="options-grid" id="quiz-options"></div>
+            
+            <button id="next-quiz-btn" class="action-btn" style="display:none; width: 100%; margin-top: 10px;" onclick="nextQuestion()">下一題 →</button>
+        </div>
+
+        <!-- 測驗結果與錯題整理 -->
+        <div class="result-box" id="result-box">
+            <h2 style="margin: 0; color: var(--text-sub);">測驗完成！</h2>
+            <div class="result-score" id="final-score">80 分</div>
+            
+            <div id="mistake-section" style="width: 100%; display: none;">
+                <div style="color: var(--accent-pink); font-size: 14px; font-weight: 600; text-align: left;">❌ 錯題單字整理：</div>
+                <div class="mistake-list-container" id="mistake-list"></div>
+            </div>
+
+            <div class="controls" style="margin-top: 15px;">
+                <button class="action-btn" onclick="startQuiz(false)">🔁 重新測驗</button>
+                <button id="review-mistakes-btn" class="action-btn" style="display:none; border-color: var(--accent-pink); color: var(--accent-pink);" onclick="startQuiz(true)">🎯 專攻錯題</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Web Audio API 音效系統
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'flip') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(350, now);
+                osc.frequency.exponentialRampToValueAtTime(700, now + 0.08);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } else if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.08);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(160, now);
+                osc.frequency.setValueAtTime(110, now + 0.12);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'star') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            }
+        }
+
+        // 發音功能 (TTS)
+        function speakWord(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function speakCurrentWord(e) {
+            e.stopPropagation();
+            if (cardsList.length > 0) {
+                speakWord(cardsList[currentCardIndex].word);
+            }
+        }
+
+        // ================= 單字資料庫 (全部 61 個單字放入 Unit 1) =================
+        const vocabularyData = {
+            "Unit 1": [
+                { word: "assess", pos: "v", trans: "評估" },
+                { word: "assume", pos: "v", trans: "假設" },
+                { word: "baffle", pos: "v", trans: "難倒" },
+                { word: "biased", pos: "adj", trans: "偏見" },
+                { word: "concentrate", pos: "v", trans: "專心" },
+                { word: "consider", pos: "v", trans: "認真考慮" },
+                { word: "contemplate", pos: "v", trans: "盤算" },
+                { word: "cynical", pos: "adj", trans: "憤世嫉俗" },
+                { word: "deduce", pos: "v", trans: "推論" },
+                { word: "deliberate", pos: "v", trans: "商議" },
+                { word: "dilemma", pos: "n", trans: "兩難" },
+                { word: "discriminate", pos: "v", trans: "歧視" },
+                { word: "dubious", pos: "adj", trans: "半信半疑" },
+                { word: "estimate", pos: "n/v", trans: "估計" },
+                { word: "faith", pos: "n", trans: "信仰" },
+                { word: "gather", pos: "v", trans: "據我了解" },
+                { word: "genius", pos: "n", trans: "天才" },
+                { word: "grasp", pos: "v", trans: "理解" },
+                { word: "guesswork", pos: "n", trans: "猜測" },
+                { word: "hunch", pos: "n", trans: "預感" },
+                { word: "ideology", pos: "n", trans: "意識形態" },
+                { word: "ingenious", pos: "adj", trans: "足智多謀" },
+                { word: "inspiration", pos: "n", trans: "靈感" },
+                { word: "intuition", pos: "n", trans: "直覺" },
+                { word: "justify", pos: "v", trans: "證明…有理" },
+                { word: "naive", pos: "adj", trans: "天真" },
+                { word: "notion", pos: "n", trans: "想法" },
+                { word: "optimistic", pos: "adj", trans: "樂觀" },
+                { word: "paradox", pos: "n", trans: "悖論" },
+                { word: "pessimistic", pos: "adj", trans: "悲觀" },
+                { word: "plausible", pos: "adj", trans: "可信的" },
+                { word: "ponder", pos: "v", trans: "深思熟慮" },
+                { word: "prejudiced", pos: "adj", trans: "抱有偏見" },
+                { word: "presume", pos: "v", trans: "假設" },
+                { word: "query", pos: "n/v", trans: "質疑 / 疑問" },
+                { word: "reckon", pos: "v", trans: "認為" },
+                { word: "reflect", pos: "v", trans: "反省" },
+                { word: "sceptical", pos: "adj", trans: "懷疑" },
+                { word: "speculate", pos: "v", trans: "推測" },
+                { word: "suppose", pos: "v", trans: "認為" },
+                { word: "academic", pos: "adj/n", trans: "學術的" },
+                { word: "conscientious", pos: "adj", trans: "盡責的" },
+                { word: "cram", pos: "v", trans: "臨時抱佛腳" },
+                { word: "curriculum", pos: "n", trans: "課程" },
+                { word: "distance learning", pos: "n phr", trans: "遠距教學" },
+                { word: "graduate", pos: "n/v", trans: "畢業" },
+                { word: "ignorant", pos: "adj", trans: "無知" },
+                { word: "inattentive", pos: "adj", trans: "不專心" },
+                { word: "intellectual", pos: "adj/n", trans: "智力的" },
+                { word: "intensive", pos: "adj", trans: "集中" },
+                { word: "plagiarise", pos: "v", trans: "抄襲" },
+                { word: "self-study", pos: "n", trans: "自習" },
+                { word: "seminar", pos: "n", trans: "研討會" },
+                { word: "tuition", pos: "n", trans: "學費" },
+                { word: "tutorial", pos: "n", trans: "輔導課" },
+                { word: "amend", pos: "v", trans: "修正" },
+                { word: "conservative", pos: "adj", trans: "保守的" },
+                { word: "convert", pos: "v/n", trans: "轉換" },
+                { word: "deteriorate", pos: "v", trans: "惡化" },
+                { word: "distort", pos: "v", trans: "扭曲" },
+                { word: "dynamic", pos: "adj", trans: "充滿活力" }
+            ]
+        };
+
+        // ================= 全域星號收藏 (localStorage 持久化) =================
+        let starredWordsSet = new Set(JSON.parse(localStorage.getItem('cyber_starred_words') || '[]'));
+
+        function saveStarredToStorage() {
+            localStorage.setItem('cyber_starred_words', JSON.stringify(Array.from(starredWordsSet)));
+        }
+
+        function isWordStarred(wordText) {
+            return starredWordsSet.has(wordText);
+        }
+
+        function toggleStar(wordText) {
+            playSound('star');
+            if (starredWordsSet.has(wordText)) {
+                starredWordsSet.delete(wordText);
+            } else {
+                starredWordsSet.add(wordText);
+            }
+            saveStarredToStorage();
+        }
+
+        function getAllStarredObjects() {
+            const allWords = Object.values(vocabularyData).flat();
+            return allWords.filter(item => starredWordsSet.has(item.word));
+        }
+
+        let currentUnitWords = [];
+        let currentCardIndex = 0;
+        let cardsList = [];
+
+        let quizQuestions = [];
+        let quizIndex = 0;
+        let quizScore = 0;
+        let comboCount = 0;
+        let currentQuizWord = null;
+        let canAnswer = true;
+        let mistakeList = [];
+
+        // 初始化單元選單
+        function initUnitMenu() {
+            const gridBox = document.getElementById('unit-grid-box');
+            gridBox.innerHTML = '';
+
+            // 1. 專屬「★ 收藏單字」分類區塊
+            const starredObjects = getAllStarredObjects();
+            const starredCard = document.createElement('div');
+            starredCard.className = 'unit-card starred-unit';
+            starredCard.onclick = () => selectUnit('STARRED');
+            starredCard.innerHTML = `
+                <div class="unit-title">★ 收藏單字</div>
+                <div class="unit-count">${starredObjects.length} 個標記不熟的單字</div>
+            `;
+            gridBox.appendChild(starredCard);
+
+            // 2. 各個別 Unit 選項
+            Object.keys(vocabularyData).forEach(unitKey => {
+                const count = vocabularyData[unitKey].length;
+                const card = document.createElement('div');
+                card.className = 'unit-card';
+                card.onclick = () => selectUnit(unitKey);
+                card.innerHTML = `<div class="unit-title">${unitKey}</div><div class="unit-count">${count} 個單字</div>`;
+                gridBox.appendChild(card);
+            });
+        }
+
+        function showUnitSelection() {
+            document.getElementById('flashcard-container').classList.remove('active');
+            document.getElementById('quiz-container').classList.remove('active');
+            document.getElementById('unit-container').classList.add('active');
+            document.getElementById('main-nav').style.display = 'none';
+            initUnitMenu(); // 刷新收藏數量
+        }
+
+        function selectUnit(unitKey) {
+            if (unitKey === 'STARRED') {
+                currentUnitWords = getAllStarredObjects();
+                if (currentUnitWords.length === 0) {
+                    alert("您目前還沒有標記任何星號單字喔！\n請在背單字時點擊卡片左上角的 ★ 按鈕加入收藏。");
+                    return;
+                }
+            } else {
+                currentUnitWords = vocabularyData[unitKey] || [];
+            }
+
+            cardsList = [...currentUnitWords];
+            currentCardIndex = 0;
+
+            document.getElementById('unit-container').classList.remove('active');
+            document.getElementById('main-nav').style.display = 'flex';
+            
+            switchMode('flashcard');
+        }
+
+        function switchMode(mode) {
+            document.getElementById('flashcard-container').classList.remove('active');
+            document.getElementById('quiz-container').classList.remove('active');
+            document.getElementById('btn-flashcard').classList.remove('active');
+            document.getElementById('btn-quiz').classList.remove('active');
+
+            if (mode === 'flashcard') {
+                document.getElementById('flashcard-container').classList.add('active');
+                document.getElementById('btn-flashcard').classList.add('active');
+                updateCard();
+            } else {
+                document.getElementById('quiz-container').classList.add('active');
+                document.getElementById('btn-quiz').classList.add('active');
+                startQuiz(false);
+            }
+        }
+
+        // 翻牌邏輯
+        function updateCard() {
+            if (cardsList.length === 0) return;
+            const cardElement = document.getElementById('card');
+            cardElement.classList.remove('flipped');
+            
+            setTimeout(() => {
+                const item = cardsList[currentCardIndex];
+                document.getElementById('card-word').textContent = item.word;
+                document.getElementById('card-pos').textContent = `(${item.pos})`;
+                document.getElementById('card-trans').textContent = item.trans;
+                document.getElementById('card-progress').textContent = `${currentCardIndex + 1} / ${cardsList.length}`;
+
+                updateStarButtonsUI(item.word);
+            }, 150);
+        }
+
+        function updateStarButtonsUI(wordText) {
+            const starred = isWordStarred(wordText);
+            const frontBtn = document.getElementById('card-star-front');
+            const backBtn = document.getElementById('card-star-back');
+
+            if (starred) {
+                frontBtn.classList.add('starred');
+                backBtn.classList.add('starred');
+            } else {
+                frontBtn.classList.remove('starred');
+                backBtn.classList.remove('starred');
+            }
+        }
+
+        function toggleCurrentWordStar(e) {
+            e.stopPropagation(); // 阻止卡片翻面
+            if (cardsList.length === 0) return;
+            const item = cardsList[currentCardIndex];
+            toggleStar(item.word);
+            updateStarButtonsUI(item.word);
+        }
+
+        function flipCard() {
+            playSound('flip');
+            document.getElementById('card').classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            if (cardsList.length === 0) return;
+            currentCardIndex = (currentCardIndex + 1) % cardsList.length;
+            updateCard();
+        }
+
+        function prevCard() {
+            if (cardsList.length === 0) return;
+            currentCardIndex = (currentCardIndex - 1 + cardsList.length) % cardsList.length;
+            updateCard();
+        }
+
+        function shuffleCards() {
+            if (cardsList.length === 0) return;
+            for (let i = cardsList.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cardsList[i], cardsList[j]] = [cardsList[j], cardsList[i]];
+            }
+            currentCardIndex = 0;
+            updateCard();
+        }
+
+        // 測驗邏輯
+        function startQuiz(onlyMistakes = false) {
+            document.getElementById('quiz-active-box').style.display = 'flex';
+            document.getElementById('result-box').style.display = 'none';
+
+            let pool = onlyMistakes ? mistakeList : currentUnitWords;
+            quizQuestions = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+            
+            quizIndex = 0;
+            quizScore = 0;
+            comboCount = 0;
+            mistakeList = [];
+
+            updateComboUI();
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            if (quizIndex >= quizQuestions.length) {
+                showResults();
+                return;
+            }
+
+            canAnswer = true;
+            document.getElementById('next-quiz-btn').style.display = 'none';
+            document.getElementById('quiz-progress').textContent = `題目 ${quizIndex + 1} / ${quizQuestions.length}`;
+
+            currentQuizWord = quizQuestions[quizIndex];
+            document.getElementById('quiz-word').textContent = currentQuizWord.word;
+
+            let allOptionsPool = Object.values(vocabularyData).flat();
+            let options = [currentQuizWord.trans];
+            while (options.length < 4) {
+                const randomOpt = allOptionsPool[Math.floor(Math.random() * allOptionsPool.length)].trans;
+                if (!options.includes(randomOpt)) {
+                    options.push(randomOpt);
+                }
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(btn, option);
+                optionsContainer.appendChild(btn);
+            });
+
+            speakWord(currentQuizWord.word);
+        }
+
+        function checkAnswer(selectedBtn, selectedOption) {
+            if (!canAnswer) return;
+            canAnswer = false;
+
+            const allButtons = document.querySelectorAll('.option-btn');
+
+            if (selectedOption === currentQuizWord.trans) {
+                playSound('correct');
+                selectedBtn.classList.add('correct');
+                comboCount++;
+                quizScore += 10 + (comboCount > 1 ? comboCount * 2 : 0);
+
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 35, spread: 60, origin: { y: 0.7 } });
+                }
+            } else {
+                playSound('wrong');
+                selectedBtn.classList.add('wrong');
+                comboCount = 0;
+                mistakeList.push(currentQuizWord);
+
+                document.getElementById('quiz-container').classList.add('shake');
+                setTimeout(() => document.getElementById('quiz-container').classList.remove('shake'), 400);
+
+                allButtons.forEach(btn => {
+                    if (btn.textContent === currentQuizWord.trans) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            updateComboUI();
+            quizIndex++;
+            document.getElementById('next-quiz-btn').style.display = 'block';
+        }
+
+        function updateComboUI() {
+            const badge = document.getElementById('combo-badge');
+            if (comboCount > 1) {
+                badge.textContent = `🔥 ${comboCount} COMBO`;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-active-box').style.display = 'none';
+            document.getElementById('result-box').style.display = 'flex';
+            document.getElementById('final-score').textContent = `${quizScore} 分`;
+
+            const mistakeSection = document.getElementById('mistake-section');
+            const mistakeListContainer = document.getElementById('mistake-list');
+            const reviewBtn = document.getElementById('review-mistakes-btn');
+
+            if (mistakeList.length > 0) {
+                mistakeSection.style.display = 'block';
+                reviewBtn.style.display = 'block';
+                mistakeListContainer.innerHTML = '';
+
+                mistakeList.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'mistake-item';
+                    
+                    const isStarred = isWordStarred(item.word);
+                    div.innerHTML = `
+                        <div>
+                            <span class="mistake-word">${item.word}</span> 
+                            <span style="color:var(--text-sub); margin-left: 8px;">${item.trans}</span>
+                        </div>
+                        <button class="list-star-btn ${isStarred ? 'starred' : ''}" onclick="toggleListStar(this, '${item.word}')">★</button>
+                    `;
+                    mistakeListContainer.appendChild(div);
+                });
+            } else {
+                mistakeSection.style.display = 'none';
+                reviewBtn.style.display = 'none';
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 100, spread: 100, origin: { y: 0.5 } });
+                }
+            }
+        }
+
+        function toggleListStar(btnElement, wordText) {
+            toggleStar(wordText);
+            if (isWordStarred(wordText)) {
+                btnElement.classList.add('starred');
+            } else {
+                btnElement.classList.remove('starred');
+            }
+        }
+
+        // 背景 Canvas 動畫
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.alpha = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 242, 254, ${this.alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 40; i++) particles.push(new Particle());
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // 啟動首頁選單
+        initUnitMenu();
+    </script>
+</body>
+</html>
