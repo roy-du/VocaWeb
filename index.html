@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>極客單字庫 - Cyberpunk Flashcards & Starred Words</title>
+    <title>極客單字庫 - Cyberpunk Flashcards</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
@@ -12,8 +12,8 @@
             --secondary-glow: #4facfe;
             --accent-pink: #ff0844;
             --accent-green: #00e676;
-            --accent-star: #ffd700;
-            --glass-bg: rgba(22, 27, 34, 0.8);
+            --accent-gold: #ffd700;
+            --glass-bg: rgba(22, 27, 34, 0.75);
             --glass-border: rgba(255, 255, 255, 0.12);
             --text-main: #f0f6fc;
             --text-sub: #8b949e;
@@ -23,7 +23,6 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -40,7 +39,6 @@
             position: relative;
         }
 
-        /* 炫彩動態背景光芒 */
         .aurora-bg {
             position: fixed;
             top: 0;
@@ -51,8 +49,8 @@
             background: 
                 radial-gradient(circle at 15% 20%, rgba(0, 242, 254, 0.15) 0%, transparent 45%),
                 radial-gradient(circle at 85% 80%, rgba(255, 8, 68, 0.15) 0%, transparent 45%),
-                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.08) 0%, transparent 60%);
-            filter: blur(45px);
+                radial-gradient(circle at 50% 50%, rgba(79, 172, 254, 0.1) 0%, transparent 60%);
+            filter: blur(40px);
             animation: pulseBg 12s ease-in-out infinite alternate;
         }
 
@@ -73,20 +71,18 @@
 
         h1 {
             font-size: 2.2rem;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #ffd700 100%);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 25px rgba(0, 242, 254, 0.35);
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
             letter-spacing: 2px;
             text-align: center;
-            margin-top: 0;
         }
 
-        /* 導覽列 */
         .nav-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 20px;
             background: rgba(255, 255, 255, 0.05);
             padding: 6px;
@@ -96,7 +92,7 @@
         }
 
         .nav-btn {
-            padding: 8px 18px;
+            padding: 8px 16px;
             font-size: 14px;
             font-weight: 600;
             border: none;
@@ -113,7 +109,6 @@
             box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
         }
 
-        /* 容器通用樣式 */
         .container {
             width: 100%;
             max-width: 520px;
@@ -121,7 +116,7 @@
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(16px);
             border-radius: 24px;
-            padding: 26px;
+            padding: 30px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             display: none;
             flex-direction: column;
@@ -139,7 +134,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 單元選擇畫面 */
         .unit-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -151,13 +145,11 @@
         .unit-card {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--glass-border);
-            border-radius: 18px;
+            border-radius: 16px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
         }
 
         .unit-card:hover {
@@ -168,14 +160,14 @@
         }
 
         .unit-card.starred-unit {
-            background: linear-gradient(145deg, rgba(255, 215, 0, 0.12), rgba(255, 140, 0, 0.05));
             border-color: rgba(255, 215, 0, 0.4);
-            grid-column: span 2;
+            background: rgba(255, 215, 0, 0.05);
         }
 
         .unit-card.starred-unit:hover {
-            background: linear-gradient(145deg, rgba(255, 215, 0, 0.25), rgba(255, 140, 0, 0.12));
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.15);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
         }
 
         .unit-title {
@@ -185,9 +177,8 @@
             margin-bottom: 6px;
         }
 
-        .starred-unit .unit-title {
-            color: var(--accent-star);
-            font-size: 22px;
+        .unit-card.starred-unit .unit-title {
+            color: var(--accent-gold);
         }
 
         .unit-count {
@@ -195,10 +186,9 @@
             color: var(--text-sub);
         }
 
-        /* 3D 翻牌卡片 */
         .card-wrapper {
             width: 100%;
-            height: 270px;
+            height: 260px;
             perspective: 1000px;
             cursor: pointer;
             margin-bottom: 25px;
@@ -266,14 +256,12 @@
             text-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
         }
 
-        /* 語音按鈕與星號按鈕 */
-        .card-icon-btn {
-            position: absolute;
+        .icon-btn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             color: var(--text-main);
             cursor: pointer;
             display: flex;
@@ -284,34 +272,26 @@
             z-index: 10;
         }
 
-        .card-icon-btn:hover {
-            transform: scale(1.12);
-        }
-
-        .tts-btn {
-            top: 15px;
-            right: 15px;
-        }
-
-        .tts-btn:hover {
-            background: var(--primary-glow);
-            color: #000;
+        .icon-btn:hover {
+            transform: scale(1.15);
         }
 
         .star-btn {
+            position: absolute;
             top: 15px;
             left: 15px;
-            color: rgba(255, 255, 255, 0.3);
+            color: var(--text-sub);
         }
 
-        .star-btn.starred {
-            color: var(--accent-star);
-            background: rgba(255, 215, 0, 0.2);
+        .star-btn.active {
+            color: var(--accent-gold);
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
         }
 
-        .star-btn.starred:hover {
-            background: rgba(255, 215, 0, 0.35);
+        .tts-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
         }
 
         .controls {
@@ -360,7 +340,9 @@
             color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
         }
 
         .combo-badge {
@@ -420,7 +402,6 @@
             40%, 80% { transform: translateX(8px); }
         }
 
-        /* 結果畫面 */
         .result-box {
             width: 100%;
             text-align: center;
@@ -462,20 +443,6 @@
             color: var(--accent-pink);
             font-weight: 600;
         }
-
-        .list-star-btn {
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 16px;
-            cursor: pointer;
-            padding: 4px;
-            transition: all 0.2s;
-        }
-
-        .list-star-btn.starred {
-            color: var(--accent-star);
-        }
     </style>
 </head>
 <body>
@@ -485,7 +452,6 @@
 
     <h1>VOCABULARY MASTER</h1>
 
-    <!-- 頂部選單切換按鈕 -->
     <div class="nav-buttons" id="main-nav" style="display:none;">
         <button class="nav-btn" onclick="showUnitSelection()">📂 切換單元</button>
         <button id="btn-flashcard" class="nav-btn active" onclick="switchMode('flashcard')">🎴 翻牌</button>
@@ -494,26 +460,22 @@
 
     <!-- 1. 單元選擇頁面 -->
     <div id="unit-container" class="container active">
-        <h2 style="margin-top:0; color:var(--text-main); font-size: 1.3rem;">請選擇學習單元</h2>
-        <div class="unit-grid" id="unit-grid-box">
-            <!-- 單元卡片由 JS 動態生成 -->
-        </div>
+        <h2 style="margin-top:0; color:var(--text-main);">請選擇學習單元</h2>
+        <div class="unit-grid" id="unit-grid-box"></div>
     </div>
 
     <!-- 2. 翻牌模式 -->
     <div id="flashcard-container" class="container">
         <div class="card-wrapper" onclick="flipCard()">
             <div class="card" id="card">
-                <!-- 正面 -->
                 <div class="card-face card-front">
-                    <button id="card-star-front" class="card-icon-btn star-btn" onclick="toggleCurrentWordStar(event)" title="標記星號">★</button>
-                    <button class="card-icon-btn tts-btn" onclick="speakCurrentWord(event)" title="發音">🔊</button>
+                    <button class="icon-btn star-btn" id="star-btn-front" onclick="toggleCurrentWordStar(event)">★</button>
+                    <button class="icon-btn tts-btn" onclick="speakCurrentWord(event)">🔊</button>
                     <div class="word-title" id="card-word">assess</div>
                     <div class="word-pos" id="card-pos">(v)</div>
                 </div>
-                <!-- 背面 -->
                 <div class="card-face card-back">
-                    <button id="card-star-back" class="card-icon-btn star-btn" onclick="toggleCurrentWordStar(event)" title="標記星號">★</button>
+                    <button class="icon-btn star-btn" id="star-btn-back" onclick="toggleCurrentWordStar(event)">★</button>
                     <div class="word-trans" id="card-trans">評估</div>
                 </div>
             </div>
@@ -535,8 +497,10 @@
             </div>
             
             <div class="quiz-word-box">
+                <!-- 測驗題目頁面的星號按鈕 -->
+                <button class="icon-btn star-btn" id="quiz-star-btn" style="position:static;" onclick="toggleQuizWordStar()">★</button>
                 <span id="quiz-word">assess</span>
-                <button class="card-icon-btn tts-btn" style="position:static;" onclick="speakWord(currentQuizWord.word)">🔊</button>
+                <button class="icon-btn tts-btn" style="position:static;" onclick="speakWord(currentQuizWord.word)">🔊</button>
             </div>
 
             <div class="options-grid" id="quiz-options"></div>
@@ -544,7 +508,6 @@
             <button id="next-quiz-btn" class="action-btn" style="display:none; width: 100%; margin-top: 10px;" onclick="nextQuestion()">下一題 →</button>
         </div>
 
-        <!-- 測驗結果與錯題整理 -->
         <div class="result-box" id="result-box">
             <h2 style="margin: 0; color: var(--text-sub);">測驗完成！</h2>
             <div class="result-score" id="final-score">80 分</div>
@@ -562,7 +525,7 @@
     </div>
 
     <script>
-        // Web Audio API 音效系統
+        // 音效系統
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -598,16 +561,16 @@
                 osc.stop(now + 0.25);
             } else if (type === 'star') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.setValueAtTime(800, now);
                 osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
-                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.setValueAtTime(0.1, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
                 osc.start(now);
                 osc.stop(now + 0.1);
             }
         }
 
-        // 發音功能 (TTS)
+        // 發音功能
         function speakWord(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -620,12 +583,10 @@
 
         function speakCurrentWord(e) {
             e.stopPropagation();
-            if (cardsList.length > 0) {
-                speakWord(cardsList[currentCardIndex].word);
-            }
+            speakWord(cardsList[currentCardIndex].word);
         }
 
-        // ================= 單字資料庫 (全部 61 個單字放入 Unit 1) =================
+        // 單字庫 (61個單字皆位於 Unit 1)[cite: 1, 2]
         const vocabularyData = {
             "Unit 1": [
                 { word: "assess", pos: "v", trans: "評估" },
@@ -692,30 +653,26 @@
             ]
         };
 
-        // ================= 全域星號收藏 (localStorage 持久化) =================
-        let starredWordsSet = new Set(JSON.parse(localStorage.getItem('cyber_starred_words') || '[]'));
+        // 全域星號儲存管理 (localStorage)
+        let starredWords = JSON.parse(localStorage.getItem('starred_words_v1')) || [];
 
-        function saveStarredToStorage() {
-            localStorage.setItem('cyber_starred_words', JSON.stringify(Array.from(starredWordsSet)));
+        function saveStarredWords() {
+            localStorage.setItem('starred_words_v1', JSON.stringify(starredWords));
         }
 
         function isWordStarred(wordText) {
-            return starredWordsSet.has(wordText);
+            return starredWords.some(item => item.word === wordText);
         }
 
-        function toggleStar(wordText) {
+        function toggleStar(wordObj) {
             playSound('star');
-            if (starredWordsSet.has(wordText)) {
-                starredWordsSet.delete(wordText);
+            const index = starredWords.findIndex(item => item.word === wordObj.word);
+            if (index > -1) {
+                starredWords.splice(index, 1);
             } else {
-                starredWordsSet.add(wordText);
+                starredWords.push(wordObj);
             }
-            saveStarredToStorage();
-        }
-
-        function getAllStarredObjects() {
-            const allWords = Object.values(vocabularyData).flat();
-            return allWords.filter(item => starredWordsSet.has(item.word));
+            saveStarredWords();
         }
 
         let currentUnitWords = [];
@@ -730,23 +687,18 @@
         let canAnswer = true;
         let mistakeList = [];
 
-        // 初始化單元選單
         function initUnitMenu() {
             const gridBox = document.getElementById('unit-grid-box');
             gridBox.innerHTML = '';
 
-            // 1. 專屬「★ 收藏單字」分類區塊
-            const starredObjects = getAllStarredObjects();
-            const starredCard = document.createElement('div');
-            starredCard.className = 'unit-card starred-unit';
-            starredCard.onclick = () => selectUnit('STARRED');
-            starredCard.innerHTML = `
-                <div class="unit-title">★ 收藏單字</div>
-                <div class="unit-count">${starredObjects.length} 個標記不熟的單字</div>
-            `;
-            gridBox.appendChild(starredCard);
+            // ★ 跨單元星號收藏夾
+            const starCard = document.createElement('div');
+            starCard.className = 'unit-card starred-unit';
+            starCard.onclick = () => selectStarredUnit();
+            starCard.innerHTML = `<div class="unit-title">★ 星號收藏夾</div><div class="unit-count">${starredWords.length} 個標記單字</div>`;
+            gridBox.appendChild(starCard);
 
-            // 2. 各個別 Unit 選項
+            // 各單元選單
             Object.keys(vocabularyData).forEach(unitKey => {
                 const count = vocabularyData[unitKey].length;
                 const card = document.createElement('div');
@@ -758,30 +710,34 @@
         }
 
         function showUnitSelection() {
+            initUnitMenu();
             document.getElementById('flashcard-container').classList.remove('active');
             document.getElementById('quiz-container').classList.remove('active');
             document.getElementById('unit-container').classList.add('active');
             document.getElementById('main-nav').style.display = 'none';
-            initUnitMenu(); // 刷新收藏數量
         }
 
-        function selectUnit(unitKey) {
-            if (unitKey === 'STARRED') {
-                currentUnitWords = getAllStarredObjects();
-                if (currentUnitWords.length === 0) {
-                    alert("您目前還沒有標記任何星號單字喔！\n請在背單字時點擊卡片左上角的 ★ 按鈕加入收藏。");
-                    return;
-                }
-            } else {
-                currentUnitWords = vocabularyData[unitKey] || [];
+        function selectStarredUnit() {
+            if (starredWords.length === 0) {
+                alert('您目前還沒有加入任何星號單字喔！點擊卡片或測驗旁邊的 ★ 按鈕即可加入。');
+                return;
             }
-
+            currentUnitWords = [...starredWords];
             cardsList = [...currentUnitWords];
             currentCardIndex = 0;
 
             document.getElementById('unit-container').classList.remove('active');
             document.getElementById('main-nav').style.display = 'flex';
-            
+            switchMode('flashcard');
+        }
+
+        function selectUnit(unitKey) {
+            currentUnitWords = vocabularyData[unitKey] || [];
+            cardsList = [...currentUnitWords];
+            currentCardIndex = 0;
+
+            document.getElementById('unit-container').classList.remove('active');
+            document.getElementById('main-nav').style.display = 'flex';
             switchMode('flashcard');
         }
 
@@ -802,9 +758,47 @@
             }
         }
 
-        // 翻牌邏輯
+        // 卡片模式星號切換
+        function toggleCurrentWordStar(e) {
+            e.stopPropagation();
+            const currentObj = cardsList[currentCardIndex];
+            toggleStar(currentObj);
+            updateStarUI();
+        }
+
+        // 測驗模式星號切換
+        function toggleQuizWordStar() {
+            toggleStar(currentQuizWord);
+            updateQuizStarUI();
+        }
+
+        function updateStarUI() {
+            const currentObj = cardsList[currentCardIndex];
+            const isStarred = isWordStarred(currentObj.word);
+            
+            const btnFront = document.getElementById('star-btn-front');
+            const btnBack = document.getElementById('star-btn-back');
+
+            if (isStarred) {
+                btnFront.classList.add('active');
+                btnBack.classList.add('active');
+            } else {
+                btnFront.classList.remove('active');
+                btnBack.classList.remove('active');
+            }
+        }
+
+        function updateQuizStarUI() {
+            const isStarred = isWordStarred(currentQuizWord.word);
+            const btn = document.getElementById('quiz-star-btn');
+            if (isStarred) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+
         function updateCard() {
-            if (cardsList.length === 0) return;
             const cardElement = document.getElementById('card');
             cardElement.classList.remove('flipped');
             
@@ -814,31 +808,8 @@
                 document.getElementById('card-pos').textContent = `(${item.pos})`;
                 document.getElementById('card-trans').textContent = item.trans;
                 document.getElementById('card-progress').textContent = `${currentCardIndex + 1} / ${cardsList.length}`;
-
-                updateStarButtonsUI(item.word);
+                updateStarUI();
             }, 150);
-        }
-
-        function updateStarButtonsUI(wordText) {
-            const starred = isWordStarred(wordText);
-            const frontBtn = document.getElementById('card-star-front');
-            const backBtn = document.getElementById('card-star-back');
-
-            if (starred) {
-                frontBtn.classList.add('starred');
-                backBtn.classList.add('starred');
-            } else {
-                frontBtn.classList.remove('starred');
-                backBtn.classList.remove('starred');
-            }
-        }
-
-        function toggleCurrentWordStar(e) {
-            e.stopPropagation(); // 阻止卡片翻面
-            if (cardsList.length === 0) return;
-            const item = cardsList[currentCardIndex];
-            toggleStar(item.word);
-            updateStarButtonsUI(item.word);
         }
 
         function flipCard() {
@@ -847,19 +818,16 @@
         }
 
         function nextCard() {
-            if (cardsList.length === 0) return;
             currentCardIndex = (currentCardIndex + 1) % cardsList.length;
             updateCard();
         }
 
         function prevCard() {
-            if (cardsList.length === 0) return;
             currentCardIndex = (currentCardIndex - 1 + cardsList.length) % cardsList.length;
             updateCard();
         }
 
         function shuffleCards() {
-            if (cardsList.length === 0) return;
             for (let i = cardsList.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [cardsList[i], cardsList[j]] = [cardsList[j], cardsList[i]];
@@ -897,6 +865,7 @@
 
             currentQuizWord = quizQuestions[quizIndex];
             document.getElementById('quiz-word').textContent = currentQuizWord.word;
+            updateQuizStarUI();
 
             let allOptionsPool = Object.values(vocabularyData).flat();
             let options = [currentQuizWord.trans];
@@ -989,9 +958,9 @@
                     div.innerHTML = `
                         <div>
                             <span class="mistake-word">${item.word}</span> 
-                            <span style="color:var(--text-sub); margin-left: 8px;">${item.trans}</span>
+                            <span style="color:var(--text-sub); margin-left:8px;">${item.trans}</span>
                         </div>
-                        <button class="list-star-btn ${isStarred ? 'starred' : ''}" onclick="toggleListStar(this, '${item.word}')">★</button>
+                        <button class="icon-btn star-btn ${isStarred ? 'active' : ''}" style="position:static; width:30px; height:30px; font-size:14px;" onclick="toggleMistakeStar(this, '${item.word}')">★</button>
                     `;
                     mistakeListContainer.appendChild(div);
                 });
@@ -1004,16 +973,16 @@
             }
         }
 
-        function toggleListStar(btnElement, wordText) {
-            toggleStar(wordText);
-            if (isWordStarred(wordText)) {
-                btnElement.classList.add('starred');
-            } else {
-                btnElement.classList.remove('starred');
+        function toggleMistakeStar(btnEl, wordText) {
+            const allWords = Object.values(vocabularyData).flat();
+            const targetObj = allWords.find(w => w.word === wordText);
+            if (targetObj) {
+                toggleStar(targetObj);
+                btnEl.classList.toggle('active');
             }
         }
 
-        // 背景 Canvas 動畫
+        // Canvas 動畫
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -1056,7 +1025,6 @@
         }
         animateParticles();
 
-        // 啟動首頁選單
         initUnitMenu();
     </script>
 </body>
