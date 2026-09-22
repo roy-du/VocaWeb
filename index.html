@@ -236,7 +236,7 @@
         }
 
         .word-title {
-            font-size: 34px;
+            font-size: 32px;
             font-weight: 700;
             letter-spacing: 1px;
             margin-bottom: 8px;
@@ -250,7 +250,7 @@
         }
 
         .word-trans {
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 700;
             color: #ffffff;
             text-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
@@ -334,7 +334,7 @@
         }
 
         .quiz-word-box {
-            font-size: 30px;
+            font-size: 28px;
             font-weight: 700;
             margin-bottom: 25px;
             color: var(--text-main);
@@ -497,7 +497,6 @@
             </div>
             
             <div class="quiz-word-box">
-                <!-- 測驗題目頁面的星號按鈕 -->
                 <button class="icon-btn star-btn" id="quiz-star-btn" style="position:static;" onclick="toggleQuizWordStar()">★</button>
                 <span id="quiz-word">assess</span>
                 <button class="icon-btn tts-btn" style="position:static;" onclick="speakWord(currentQuizWord.word)">🔊</button>
@@ -586,7 +585,7 @@
             speakWord(cardsList[currentCardIndex].word);
         }
 
-        // 單字庫 (61個單字皆位於 Unit 1)[cite: 1, 2]
+        // 單字庫 (Unit 1 & Unit 2)
         const vocabularyData = {
             "Unit 1": [
                 { word: "assess", pos: "v", trans: "評估" },
@@ -650,10 +649,83 @@
                 { word: "deteriorate", pos: "v", trans: "惡化" },
                 { word: "distort", pos: "v", trans: "扭曲" },
                 { word: "dynamic", pos: "adj", trans: "充滿活力" }
+            ],
+            "Unit 2": [
+                { word: "endure", pos: "v", trans: "忍受 / 持久" },
+                { word: "evolve", pos: "v", trans: "進化 / 演變" },
+                { word: "influence", pos: "v/n", trans: "影響" },
+                { word: "innovation", pos: "n", trans: "創新 / 新觀念" },
+                { word: "innovative", pos: "adj", trans: "創新的" },
+                { word: "last", pos: "v", trans: "持續" },
+                { word: "maintain", pos: "v", trans: "維持 / 保持" },
+                { word: "mature", pos: "v/adj", trans: "成熟" },
+                { word: "modify", pos: "v", trans: "修改 / 調整" },
+                { word: "novel", pos: "adj", trans: "新穎的" },
+                { word: "persist", pos: "v", trans: "堅持 / 持續" },
+                { word: "potential", pos: "n/adj", trans: "潛力 / 潛在的" },
+                { word: "progress", pos: "v/n", trans: "進步 / 進展" },
+                { word: "radical", pos: "adj", trans: "激進的 / 根本的" },
+                { word: "refine", pos: "v", trans: "改進 / 精煉" },
+                { word: "reform", pos: "v/n", trans: "改革 / 改良" },
+                { word: "remain", pos: "v", trans: "保持 / 依然" },
+                { word: "revise", pos: "v", trans: "修改 / 修正" },
+                { word: "revolution", pos: "n", trans: "革命 / 巨變" },
+                { word: "shift", pos: "v/n", trans: "轉變 / 移動" },
+                { word: "spoil", pos: "v", trans: "破壞 / 毀掉" },
+                { word: "status quo", pos: "n phr", trans: "現狀" },
+                { word: "steady", pos: "v/adj", trans: "穩固的 / 穩定的" },
+                { word: "substitute", pos: "v/n", trans: "替代 / 替代品" },
+                { word: "sustain", pos: "v", trans: "維持 / 支撐" },
+                { word: "switch", pos: "v/n", trans: "轉換 / 開關" },
+                { word: "transform", pos: "v", trans: "徹底改變 / 轉化" },
+                { word: "trend", pos: "n", trans: "趨勢 / 潮流" },
+                { word: "uniform", pos: "adj", trans: "一致的 / 統一的" },
+                { word: "breakthrough", pos: "n", trans: "突破" },
+                { word: "broadband", pos: "adj/n", trans: "寬頻" },
+                { word: "click", pos: "v", trans: "點擊" },
+                { word: "complex", pos: "adj", trans: "複雜的" },
+                { word: "consumer electronics", pos: "n phr", trans: "消費性電子產品" },
+                { word: "craft", pos: "v/n", trans: "精心製作 / 手藝" },
+                { word: "data", pos: "n", trans: "資料 / 數據" },
+                { word: "download", pos: "v/n", trans: "下載" },
+                { word: "file", pos: "n", trans: "檔案" },
+                { word: "games console", pos: "n phr", trans: "遊戲主機" },
+                { word: "manual", pos: "adj/n", trans: "手動的 / 手冊" },
+                { word: "network", pos: "v/n", trans: "連網 / 網路" },
+                { word: "nuclear", pos: "adj", trans: "核能的" },
+                { word: "offline", pos: "adj/adv", trans: "離線的" },
+                { word: "online", pos: "adj/adv", trans: "連線的 / 線上" },
+                { word: "primitive", pos: "adj", trans: "原始的 / 簡陋的" },
+                { word: "programmer", pos: "n", trans: "程式設計師" },
+                { word: "resource", pos: "n", trans: "資源" },
+                { word: "technique", pos: "n", trans: "技巧 / 技術" },
+                { word: "upload", pos: "v", trans: "上傳" },
+                { word: "abrupt", pos: "adj", trans: "突然的 / 意外的" },
+                { word: "anachronism", pos: "n", trans: "過時的事物" },
+                { word: "annual", pos: "adj", trans: "每年的 / 年度的" },
+                { word: "antique", pos: "adj/n", trans: "古老的 / 古董" },
+                { word: "century", pos: "n", trans: "世紀 (百年)" },
+                { word: "chronological", pos: "adj", trans: "按時間順序的" },
+                { word: "contemporary", pos: "adj/n", trans: "當代的 / 同時代的人" },
+                { word: "decade", pos: "n", trans: "十年" },
+                { word: "duration", pos: "n", trans: "持續時間" },
+                { word: "elapse", pos: "v", trans: "(時間)流逝" },
+                { word: "era", pos: "n", trans: "時代 / 紀元" },
+                { word: "eternal", pos: "adj", trans: "永恆的" },
+                { word: "expire", pos: "v", trans: "到期 / 到期失效" },
+                { word: "frequency", pos: "n", trans: "頻率" },
+                { word: "instantaneous", pos: "adj", trans: "瞬間的 / 即刻的" },
+                { word: "interim", pos: "adj/n", trans: "臨時的 / 過渡時期" },
+                { word: "interval", pos: "n", trans: "間隔時間" },
+                { word: "lapse", pos: "n/v", trans: "小錯 / 時間流逝" },
+                { word: "lifetime", pos: "n", trans: "一生 / 使用壽命" },
+                { word: "long-standing", pos: "adj", trans: "長期的 / 長久存在的" },
+                { word: "millennium", pos: "n", trans: "一千年 / 千禧年" },
+                { word: "obsolete", pos: "adj", trans: "廢棄的 / 淘汰過時的" }
             ]
         };
 
-        // 全域星號儲存管理 (localStorage)
+        // 星號資料管理
         let starredWords = JSON.parse(localStorage.getItem('starred_words_v1')) || [];
 
         function saveStarredWords() {
@@ -691,14 +763,14 @@
             const gridBox = document.getElementById('unit-grid-box');
             gridBox.innerHTML = '';
 
-            // ★ 跨單元星號收藏夾
+            // ★ 星號收藏卡片
             const starCard = document.createElement('div');
             starCard.className = 'unit-card starred-unit';
             starCard.onclick = () => selectStarredUnit();
             starCard.innerHTML = `<div class="unit-title">★ 星號收藏夾</div><div class="unit-count">${starredWords.length} 個標記單字</div>`;
             gridBox.appendChild(starCard);
 
-            // 各單元選單
+            // 各單元卡片
             Object.keys(vocabularyData).forEach(unitKey => {
                 const count = vocabularyData[unitKey].length;
                 const card = document.createElement('div');
@@ -758,7 +830,6 @@
             }
         }
 
-        // 卡片模式星號切換
         function toggleCurrentWordStar(e) {
             e.stopPropagation();
             const currentObj = cardsList[currentCardIndex];
@@ -766,7 +837,6 @@
             updateStarUI();
         }
 
-        // 測驗模式星號切換
         function toggleQuizWordStar() {
             toggleStar(currentQuizWord);
             updateQuizStarUI();
@@ -836,7 +906,6 @@
             updateCard();
         }
 
-        // 測驗邏輯
         function startQuiz(onlyMistakes = false) {
             document.getElementById('quiz-active-box').style.display = 'flex';
             document.getElementById('result-box').style.display = 'none';
