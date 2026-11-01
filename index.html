@@ -236,7 +236,7 @@
         }
 
         .word-title {
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 700;
             letter-spacing: 1px;
             margin-bottom: 8px;
@@ -250,7 +250,7 @@
         }
 
         .word-trans {
-            font-size: 30px;
+            font-size: 28px;
             font-weight: 700;
             color: #ffffff;
             text-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
@@ -334,7 +334,7 @@
         }
 
         .quiz-word-box {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             margin-bottom: 25px;
             color: var(--text-main);
@@ -368,7 +368,7 @@
             border: 1px solid var(--glass-border);
             color: var(--text-main);
             padding: 16px;
-            font-size: 16px;
+            font-size: 15px;
             border-radius: 14px;
             cursor: pointer;
             transition: all 0.2s;
@@ -585,7 +585,7 @@
             speakWord(cardsList[currentCardIndex].word);
         }
 
-        // 單字庫 (Unit 1 & Unit 2)
+        // 單字庫 (Unit 1 ~ Unit 4)
         const vocabularyData = {
             "Unit 1": [
                 { word: "assess", pos: "v", trans: "評估" },
@@ -686,7 +686,9 @@
                 { word: "complex", pos: "adj", trans: "複雜的" },
                 { word: "consumer electronics", pos: "n phr", trans: "消費性電子產品" },
                 { word: "craft", pos: "v/n", trans: "精心製作 / 手藝" },
-                { word: "data", pos: "n", trans: "資料 / 數據" },
+                { word: "data", pos: "n", trans: "資料 / 數據" }
+            ],
+            "Unit 3": [
                 { word: "download", pos: "v/n", trans: "下載" },
                 { word: "file", pos: "n", trans: "檔案" },
                 { word: "games console", pos: "n phr", trans: "遊戲主機" },
@@ -722,6 +724,46 @@
                 { word: "long-standing", pos: "adj", trans: "長期的 / 長久存在的" },
                 { word: "millennium", pos: "n", trans: "一千年 / 千禧年" },
                 { word: "obsolete", pos: "adj", trans: "廢棄的 / 淘汰過時的" }
+            ],
+            "Unit 4": [
+                { word: "overdue", pos: "adj", trans: "過期的 / 延誤的" },
+                { word: "period", pos: "n", trans: "時期 / 一段時間" },
+                { word: "permanent", pos: "adj", trans: "永久的 / 長久的" },
+                { word: "phase", pos: "n", trans: "階段 / 時期" },
+                { word: "postpone", pos: "v", trans: "延期 / 推遲" },
+                { word: "prior", pos: "adj", trans: "先前的 / 優先的" },
+                { word: "prompt", pos: "adj", trans: "敏捷的 / 立即的" },
+                { word: "provisional", pos: "adj", trans: "臨時的 / 暫時的" },
+                { word: "punctual", pos: "adj", trans: "準時的 / 守時的" },
+                { word: "seasonal", pos: "adj", trans: "季節性的" },
+                { word: "simultaneous", pos: "adj", trans: "同時發生的" },
+                { word: "span", pos: "n/v", trans: "跨度 / 持續" },
+                { word: "spell", pos: "n", trans: "短暫時間" },
+                { word: "stint", pos: "n", trans: "工作期限 / 任期" },
+                { word: "subsequent", pos: "adj", trans: "隨後的 / 後來的" },
+                { word: "temporary", pos: "adj", trans: "暫時的" },
+                { word: "timely", pos: "adj", trans: "及時的 / 適時的" },
+                { word: "vintage", pos: "adj/n", trans: "經典的 / 復古的" },
+                { word: "civil service", pos: "n phr", trans: "公務員體系 / 公職" },
+                { word: "client", pos: "n", trans: "客戶 / 委託人" },
+                { word: "colleague", pos: "n", trans: "同事" },
+                { word: "consultant", pos: "n", trans: "顧問 / 專家" },
+                { word: "effective", pos: "adj", trans: "有效的 / 生效的" },
+                { word: "efficient", pos: "adj", trans: "高效率的" },
+                { word: "executive", pos: "n", trans: "高階主管 / 行政人員" },
+                { word: "fire", pos: "v", trans: "解僱 / 開除" },
+                { word: "headhunt", pos: "v", trans: "獵頭 / 挖角" },
+                { word: "leave", pos: "n", trans: "休假 / 請假" },
+                { word: "marketing", pos: "n", trans: "行銷 / 市場行銷" },
+                { word: "multinational", pos: "n/adj", trans: "跨國公司 / 跨國的" },
+                { word: "private sector", pos: "n phr", trans: "私營部門 / 私企" },
+                { word: "promotion", pos: "n", trans: "升遷 / 推廣" },
+                { word: "prospects", pos: "n pl", trans: "前景 / 前途" },
+                { word: "public sector", pos: "n phr", trans: "公營部門 / 公家機關" },
+                { word: "recruit", pos: "n/v", trans: "新兵 / 招募" },
+                { word: "redundant", pos: "adj", trans: "多餘的 / 被解僱裁員的" },
+                { word: "sack", pos: "v", trans: "開除 / 解僱" },
+                { word: "strike", pos: "n/v", trans: "罷工" }
             ]
         };
 
