@@ -140,6 +140,17 @@
             gap: 15px;
             width: 100%;
             margin-top: 15px;
+            max-height: 65vh;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .unit-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+        .unit-grid::-webkit-scrollbar-thumb {
+            background: rgba(0, 242, 254, 0.3);
+            border-radius: 3px;
         }
 
         .unit-card {
@@ -162,6 +173,7 @@
         .unit-card.starred-unit {
             border-color: rgba(255, 215, 0, 0.4);
             background: rgba(255, 215, 0, 0.05);
+            grid-column: span 2;
         }
 
         .unit-card.starred-unit:hover {
@@ -585,7 +597,7 @@
             speakWord(cardsList[currentCardIndex].word);
         }
 
-        // 單字庫 (Unit 1 ~ Unit 6)[cite: 1, 2, 7, 8, 9, 10, 11]
+        // 單字庫 (Unit 1 ~ Unit 8)[cite: 1, 2, 7, 8, 9, 10, 11, 12, 13]
         const vocabularyData = {
             "Unit 1": [
                 { word: "assess", pos: "v", trans: "評估" },
@@ -840,6 +852,85 @@
                 { word: "caption", pos: "n", trans: "圖說 / 文字說明" },
                 { word: "columnist", pos: "n", trans: "專欄作家" },
                 { word: "correspondent", pos: "n", trans: "特派記者 / 通訊員" }
+            ],
+            "Unit 7": [
+                { word: "bulk", pos: "n", trans: "大量 / 體積" },
+                { word: "considerable", pos: "adj", trans: "相當大的 / 可觀的" },
+                { word: "countless", pos: "adj", trans: "無數的 / 數不盡的" },
+                { word: "dimension", pos: "n", trans: "維度 / 尺寸 / 方面" },
+                { word: "diminish", pos: "v", trans: "減少 / 減弱" },
+                { word: "equation", pos: "n", trans: "方程式 / 綜合考量" },
+                { word: "equidistant", pos: "adj", trans: "等距離的" },
+                { word: "expand", pos: "v", trans: "擴大 / 膨脹" },
+                { word: "extent", pos: "n", trans: "程度 / 範圍" },
+                { word: "finite", pos: "adj", trans: "有限的" },
+                { word: "force", pos: "n/v", trans: "武力 / 力量 / 強迫" },
+                { word: "fraction", pos: "n", trans: "小部分 / 分數" },
+                { word: "heap", pos: "n/v", trans: "一大堆 / 堆積" },
+                { word: "imbalance", pos: "n", trans: "不平衡 / 失衡" },
+                { word: "immense", pos: "adj", trans: "巨大的 / 極大的" },
+                { word: "intensity", pos: "n", trans: "強度 / 劇烈" },
+                { word: "magnitude", pos: "n", trans: "重大 / 規模 / 震級" },
+                { word: "major", pos: "adj", trans: "主要的 / 重大的" },
+                { word: "mass", pos: "n", trans: "大量 / 質量" },
+                { word: "meagre", pos: "adj", trans: "貧乏的 / 不足的" },
+                { word: "minor", pos: "adj", trans: "次要的 / 輕微的" },
+                { word: "minute", pos: "adj", trans: "微小的 / 極微量的" },
+                { word: "multiple", pos: "adj/n", trans: "多重的 / 倍數" },
+                { word: "proportion", pos: "n", trans: "比例 / 部分" },
+                { word: "quantify", pos: "v", trans: "量化 / 測量數量" },
+                { word: "rate", pos: "n/v", trans: "比率 / 速度 / 評估" },
+                { word: "ratio", pos: "n", trans: "比率 / 比例" },
+                { word: "ration", pos: "n/v", trans: "配給量 / 定量配給" },
+                { word: "shrink", pos: "v", trans: "縮小 / 縮水" },
+                { word: "sufficient", pos: "adj", trans: "足夠的 / 充足的" },
+                { word: "sum", pos: "n", trans: "金額 / 總數 / 算術" },
+                { word: "uneven", pos: "adj", trans: "不平坦的 / 不均衡的" },
+                { word: "vast", pos: "adj", trans: "廣闊的 / 龐大的" },
+                { word: "volume", pos: "n", trans: "總量 / 體積 / 容積" },
+                { word: "widespread", pos: "adj", trans: "廣泛的 / 普遍的" },
+                { word: "benefit", pos: "n/v", trans: "救濟金 / 益處 / 受益" },
+                { word: "compensation", pos: "n", trans: "賠償金 / 補償" }
+            ],
+            "Unit 8": [
+                { word: "damages", pos: "n", trans: "損害賠償金" },
+                { word: "debt", pos: "n", trans: "債務 / 欠款" },
+                { word: "deduct", pos: "v", trans: "扣除 / 減去" },
+                { word: "deposit", pos: "n/v", trans: "訂金 / 存款 / 存入" },
+                { word: "direct debit", pos: "n phr", trans: "直接扣款 / 自動轉帳" },
+                { word: "dividend", pos: "n", trans: "股息 / 紅利" },
+                { word: "down payment", pos: "n phr", trans: "頭期款" },
+                { word: "finance", pos: "n/v", trans: "金融 / 資金 / 資助" },
+                { word: "insurance", pos: "n", trans: "保險 / 保險金" },
+                { word: "interest", pos: "n", trans: "利息" },
+                { word: "investment", pos: "n", trans: "投資 / 投資資金" },
+                { word: "lump sum", pos: "n phr", trans: "一次付清的總金額" },
+                { word: "mortgage", pos: "n", trans: "抵押貸款 / 房貸" },
+                { word: "overdraft", pos: "n", trans: "透支 / 透支額" },
+                { word: "pension", pos: "n", trans: "退休金 / 養老金" },
+                { word: "share", pos: "n", trans: "股份 / 股票" },
+                { word: "speculate", pos: "v", trans: "投機 / 炒作" },
+                { word: "withdraw", pos: "v", trans: "提款 / 領錢" },
+                { word: "block", pos: "v/n", trans: "阻塞 / 擋住 / 塊" },
+                { word: "brittle", pos: "adj", trans: "易碎的 / 脆弱的" },
+                { word: "chip", pos: "v/n", trans: "缺口 / 碎裂 / 碎片" },
+                { word: "compact", pos: "v/adj", trans: "壓實 / 緊湊的 / 小巧的" },
+                { word: "concentrate", pos: "v", trans: "濃縮" },
+                { word: "crack", pos: "v/n", trans: "破裂 / 裂縫" },
+                { word: "crumb", pos: "n", trans: "麵包屑 / 碎屑" },
+                { word: "crush", pos: "v/n", trans: "壓碎 / 擠壓 / 擁擠的人群" },
+                { word: "dense", pos: "adj", trans: "密集的 / 密度高的" },
+                { word: "dilute", pos: "v/adj", trans: "稀釋 / 沖淡的" },
+                { word: "dissolve", pos: "v", trans: "溶解 / 融化" },
+                { word: "fabric", pos: "n", trans: "織物 / 布料" },
+                { word: "firm", pos: "adj", trans: "堅固的 / 結實的" },
+                { word: "flake", pos: "v/n", trans: "剝落 / 薄片" },
+                { word: "fragile", pos: "adj", trans: "易碎的 / 脆弱的" },
+                { word: "friction", pos: "n", trans: "摩擦力 / 摩擦" },
+                { word: "grain", pos: "n", trans: "顆粒 / 細粒" },
+                { word: "gravity", pos: "n", trans: "重力 / 地心引力" },
+                { word: "grind", pos: "v", trans: "磨碎 / 研磨" },
+                { word: "hollow", pos: "adj", trans: "空心的 / 中空的" }
             ]
         };
 
